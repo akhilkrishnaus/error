@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS, UPDATE_CHANNEL, WVD
 from database.users_chats_db import db
-from database.ia_filterdb import Media, Media2, get_file_details, get_search_results, get_bad_files, db as clientDB, db2 as clientDB2
+from database.ia_filterdb import Media, Media2, Media3, Media4, get_file_details, get_search_results, get_bad_files, db as clientDB, db2 as clientDB2, db3 as clientDB3, db4 as clientDB4
 from utils import get_size, temp, get_settings
 from Script import script
 from pyrogram.errors import ChatAdminRequired
@@ -165,6 +165,10 @@ async def get_ststs(bot, message):
     filesp = await Media.count_documents()
     #secondary db
     totalsec = await Media2.count_documents()
+    #third db
+    filesp3 = await Media3.count_documents()
+    #fourth db
+    totalsec4 = await Media4.count_documents()
     #primary
     stats = await clientDB.command('dbStats')
     used_dbSize = (stats['dataSize']/(1024*1024))+(stats['indexSize']/(1024*1024))
@@ -173,7 +177,15 @@ async def get_ststs(bot, message):
     stats2 = await clientDB2.command('dbStats')
     used_dbSize2 = (stats2['dataSize']/(1024*1024))+(stats2['indexSize']/(1024*1024))
     free_dbSize2 = 512-used_dbSize2
-    await rju.edit(script.STATUS_TXT.format((int(filesp)+int(totalsec)), total_users, totl_chats, filesp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2)))
+    #third
+    stats3 = await clientDB3.command('dbStats')
+    used_dbSize3 = (stats3['dataSize']/(1024*1024))+(stats3['indexSize']/(1024*1024))
+    free_dbSize3 = 512-used_dbSize3
+    #forth
+    stats4 = await clientDB4.command('dbStats')
+    used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
+    free_dbSize4 = 512-used_dbSize4
+    await rju.edit(script.STATUS_TXT.format((int(filesp)+int(totalsec)+int(filesp3)+int(totalsec4)), total_users, totl_chats, filesp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2)))
 
 
 
