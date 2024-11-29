@@ -9,9 +9,9 @@ logging.getLogger("imdbpy").setLevel(logging.ERROR)
 
 from pyrogram import Client, __version__
 from pyrogram.raw.all import layer
-from database.ia_filterdb import Media, Media2, choose_mediaDB, db as clientDB
+from database.ia_filterdb import Media, Media2, Media3, Media4, choose_mediaDB, db as clientDB
 from database.users_chats_db import db
-from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL, SECONDDB_URI, PORT
+from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL, SECONDDB_URI, FORTHDB_URI, THIRDDB_URI, PORT
 from utils import temp
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
@@ -42,6 +42,8 @@ class Bot(Client):
         await super().start()
         await Media.ensure_indexes()
         await Media2.ensure_indexes()
+        await Media3.ensure_indexes()
+        await Media4.ensure_indexes()
         #choose the right db by checking the free space
         stats = await clientDB.command('dbStats')
         #calculating the free db space from bytes to MB
