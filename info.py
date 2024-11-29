@@ -48,6 +48,8 @@ PREFIX = environ.get("PREFIX", "/")
 SUPPORT_ID = environ.get('SUPPORT_ID', '')
 
 # MongoDB information
+FORTHDB_URI = environ.get('FORTHDB_URI', None)
+THIRDDB_URI = environ.get('THIRDDB_URI', None)
 SECONDDB_URI = environ.get('SECONDDB_URI', None)
 DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "autofilter")
