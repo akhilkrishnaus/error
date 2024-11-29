@@ -51,6 +51,12 @@ class Bot(Client):
         if SECONDDB_URI and free_dbSize<10: #if the primary db have less than 10MB left, use second DB.
             tempDict["indexDB"] = SECONDDB_URI
             logging.info(f"Since Primary DB have only {free_dbSize} MB left, Secondary DB will be used to store datas.")
+        elif THIRDDB_URI and free_dbSize<10:  # Example condition for using THIRDDB_URI
+              tempDict["indexDB"] = THIRDDB_URI
+              logging.info(f"Since Primary and Secondary DB have limited space, THIRDDB_URI will be used.")
+        elif FORTHDB_URI and free_dbSize<10:  # Example condition for using FORTHDB_URI
+              tempDict["indexDB"] = FORTHDB_URI
+              logging.info(f"Since Primary, Secondary, and third have limited space, FORTHDB_URI will be used.")
         elif SECONDDB_URI is None:
             logging.error("Missing second DB URI !\n\nAdd SECONDDB_URI now !\n\nExiting...")
             exit()
