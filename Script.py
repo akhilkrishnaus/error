@@ -316,9 +316,6 @@ Message <b>: {}</b>"""
     
     STATUS_TXT = """<b><blockquote>📂Tᴏᴛᴀʟ Fɪʟᴇs :-<code>{}</code>
 
-
-Bᴏᴛ Usᴇʀs ᴀɴᴅ Cʜᴀᴛs Cᴏᴜɴᴛ
-
 👤Tᴏᴛᴀʟ Usᴇʀs: <code>{}</code>
 ♻️Tᴏᴛᴀʟ Cʜᴀᴛs: <code>{}</code>
 
@@ -328,6 +325,16 @@ Bᴏᴛ Usᴇʀs ᴀɴᴅ Cʜᴀᴛs Cᴏᴜɴᴛ
 🆓Fʀᴇᴇ Sᴛᴏʀᴀɢᴇ: <code>{} </code>
 
 2nd Db
+📂Tᴏᴛᴀʟ Fɪʟᴇs: <code>{}</code>
+🗃️Usᴇᴅ Sᴛᴏʀᴀɢᴇ: <code>{} </code>
+🆓Fʀᴇᴇ Sᴛᴏʀᴀɢᴇ: <code>{} </code>
+
+3rd Db
+📂Tᴏᴛᴀʟ Fɪʟᴇs: <code>{}</code>
+🗃️Usᴇᴅ Sᴛᴏʀᴀɢᴇ: <code>{} </code>
+🆓Fʀᴇᴇ Sᴛᴏʀᴀɢᴇ: <code>{} </code>
+
+4th Db
 📂Tᴏᴛᴀʟ Fɪʟᴇs: <code>{}</code>
 🗃️Usᴇᴅ Sᴛᴏʀᴀɢᴇ: <code>{} </code>
 🆓Fʀᴇᴇ Sᴛᴏʀᴀɢᴇ: <code>{} </code></blockquote></b>"""
