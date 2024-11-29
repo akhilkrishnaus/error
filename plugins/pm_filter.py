@@ -1072,9 +1072,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('Rᴇғʀᴇsʜ ', callback_data='rfrsh')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
+        #1 db
         totalp = await Media.count_documents()
         #secondary db
         totalsec = await Media2.count_documents()
+        #third db
+        filesp3 = await Media3.count_documents()
+        #fourth db
+        totalsec4 = await Media4.count_documents()
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
