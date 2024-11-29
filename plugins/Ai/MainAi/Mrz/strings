@@ -1,0 +1,134 @@
+import random
+import string
+from datetime import datetime, timedelta
+from pyrogram import Client, filters
+import asyncio
+from pymongo import MongoClient
+from info import ADMINS
+
+# MongoDB connection details
+MONGO_URI = 'mongodb+srv://htechnology97:5Lc7ihOiRD2EaeSz@cluster0.kk2ff.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+client = MongoClient(MONGO_URI)
+db = client['token_db']  # Database name
+tokens_collection = db['user_tokens']  # Collection name
+
+# Function to generate a random string of letters and digits
+def random_string(length=16):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+# Function to generate the token
+def generate_token():
+    random_part = random_string()
+    token = f"Mrzbots_{random_part}_web_access_token"
+    return token
+
+# Function to set expiration (1 month from now)
+def get_expiration_date():
+    return datetime.now() + timedelta(days=30)
+
+# Function to get user token from the database
+def get_user_token(user_id):
+    result = tokens_collection.find_one({"user_id": user_id})
+    if result:
+        return {
+            'token': result['token'],
+            'expiration': result['expiration']
+        }
+    return None
+
+# Function to store user token in the database
+def store_user_token(user_id, token, expiration):
+    tokens_collection.update_one(
+        {"user_id": user_id},
+        {"$set": {"token": token, "expiration": expiration}},
+        upsert=True
+    )
+
+# Function to delete expired tokens
+def delete_user_token(user_id):
+    tokens_collection.delete_one({"user_id": user_id})
+
+# Function to count total tokens generated
+def count_total_tokens():
+    return tokens_collection.count_documents({})
+
+# Command to generate and send the token
+@Client.on_message(filters.command("gentoken"))
+async def generate_api_token(client, message):
+    user_id = message.from_user.id
+
+    token_info = get_user_token(user_id)
+
+    # Check if the user already has an active token
+    if token_info:
+        expiration_date = token_info['expiration']
+
+        if expiration_date > datetime.now():
+            await message.reply(
+                "⚠ You already have an active token.\n\n"
+                f"Your current token expires on: {expiration_date.strftime('%Y-%m-%d %H:%M:%S')}",
+                quote=True
+            )
+            return
+
+    # Notify in the group/supergroup that the token will be sent in private
+    if message.chat.type in ["group", "supergroup"]:
+        await message.reply("⚠ I sent the TOKEN in a private message; please check your PM. 😊", quote=True)
+
+    # Try to send the token via private message
+    try:
+        # Check if the bot can send a message to the user in private
+        pm_message = await client.send_message(user_id, "Generating your token...")
+        await asyncio.sleep(2)
+        await pm_message.delete()
+
+        token = generate_token()
+        expiration_date = get_expiration_date()
+
+        store_user_token(user_id, token, expiration_date)  # Save token in MongoDB
+
+        response = (
+            "✅ Generated New API Key\n\n"
+            "𝗬𝗼𝘂𝗿 𝘄𝗲𝗯 𝘁𝗼𝗸𝗲𝗻 𝗶𝘀 𝗵𝗲𝗿𝗲👇\n\n"
+            f"{token}\n\n"
+            f"Expires on: {expiration_date.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            "𝗡𝗼𝘁𝗲𝘀: *Your token is confidential. Do not share this token with anyone.*"
+        )
+        await client.send_message(user_id, response)
+
+    # If bot can't send the message (user didn't start the bot in private)
+    except Exception as e:
+        if str(e).lower().find("bot was blocked by the user") != -1 or str(e).lower().find("user is deactivated") != -1:
+            await message.reply(
+                "⚠ I cannot send you the token in private because you haven't started me in a private chat.\n"
+                "Please start the bot in private and use /gentoken again."
+            )
+        else:
+            await message.reply(f"⚠ Error: {str(e)}", quote=True)
+
+# Command to display the user's token
+@Client.on_message(filters.command("mytoken"))
+async def my_token(client, message):
+    user_id = message.from_user.id
+
+    token_info = get_user_token(user_id)
+
+    if token_info:
+        expiration_date = token_info['expiration']
+
+        if expiration_date > datetime.now():
+            if message.chat.type in ["group", "supergroup"]:
+               await message.reply("⚠ Your token has been sent to your PM. Please check it. 😊", quote=True)
+
+            response = (
+                "✅ Your current token is active.\n\n"
+                f"Token: {token_info['token']}\n"
+                f"Expires on: {expiration_date.strftime('%Y-%m-%d %H:%M:%S')}"
+            )
+            await client.send_message(user_id, response)
+
+# Command to display total generated tokens
+@Client.on_message(filters.command("totaltk") & filters.user(ADMINS))
+async def total_tokens(client, message):
+    total_tokens = count_total_tokens()
+    await message.reply(f"✅ Total tokens generated: {total_tokens}", quote=True)

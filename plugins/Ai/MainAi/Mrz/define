@@ -1,0 +1,49 @@
+import requests
+from pyrogram import Client, filters
+from pyrogram.types import Message
+
+# Function to get dictionary definition from Safone API
+def get_definition(query: str) -> str:
+    api_url = "https://api.safone.dev/dictionary"
+    params = {"query": query}
+    try:
+        response = requests.get(api_url, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            if "results" in data and data["results"]:
+                result = data["results"][0]
+                word = result.get("word", "No word found")
+                phonetics = [ph.get("text", "") for ph in result.get("phonetics", []) if "text" in ph]
+                meanings = result.get("meanings", [])
+                
+                definitions = []
+                for meaning in meanings:
+                    part_of_speech = meaning.get("partOfSpeech", "")
+                    for definition in meaning.get("definitions", []):
+                        def_text = definition.get("definition", "")
+                        example = definition.get("example", "")
+                        definitions.append(f"({part_of_speech}) {def_text}")
+                        if example:
+                            definitions.append(f"Example: {example}")
+                
+                phonetics_text = "\n".join(phonetics)
+                definitions_text = "\n".join(definitions)
+                
+                return f"Word: {word}\nPhonetics: {phonetics_text}\nDefinitions:\n{definitions_text}"
+            else:
+                return "Definition not found."
+        else:
+            return "Error: Could not fetch the definition."
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# Handler for the /define command
+@Client.on_message(filters.command("define"))
+async def define(client: Client, message: Message):
+    if len(message.command) < 2:
+        await message.reply("Please provide a word to define. Usage: /define <word>")
+        return
+    
+    query = message.command[1]
+    definition = get_definition(query)
+    await message.reply(definition)
