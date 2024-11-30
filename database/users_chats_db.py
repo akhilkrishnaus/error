@@ -54,6 +54,10 @@ class Database:
         user = await self.col.find_one({'id':int(id)})
         if not user:
             await self.col2.update_one({'id': int(id)}, {'$set': {'verification_status': status}})
+        elif not user:
+            await self.col3.update_one({'id': int(id)}, {'$set': {'verification_status': status}})
+        elif not user:
+            await self.col4.update_one({'id': int(id)}, {'$set': {'verification_status': status}})
         else:
             await self.col.update_one({'id': int(id)}, {'$set': {'verification_status': status}})
 
