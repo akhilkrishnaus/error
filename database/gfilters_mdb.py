@@ -12,10 +12,20 @@ mydb = myclient[DATABASE_NAME]
 myclient2 = pymongo.MongoClient(SECONDDB_URI)
 mydb2 = myclient2[DATABASE_NAME]
 
+myclient3 = pymongo.MongoClient(THIRDDB_URI)
+mydb3 = myclient3[DATABASE_NAME]
+
+myclient4 = pymongo.MongoClient(FORTHDB_URI)
+mydb4 = myclient4[DATABASE_NAME]
+
 async def add_gfilter(gfilters, text, reply_text, btn, file, alert):
     #check indexDB
     if tempDict['indexDB'] == DATABASE_URI:
         mycol = mydb[str(gfilters)]
+    elif tempDict['indexDB'] == THIRDDB_URI:
+        mycol = mydb3[str(gfilters)]
+    elif tempDict['indexDB'] == FORTHDB_URI:
+        mycol = mydb4[str(gfilters)]
     else:
         mycol = mydb2[str(gfilters)]
     # mycol.create_index([('text', 'text')])
@@ -37,6 +47,8 @@ async def add_gfilter(gfilters, text, reply_text, btn, file, alert):
 async def find_gfilter(gfilters, name):
     mycol = mydb[str(gfilters)]
     mycol2 = mydb2[str(gfilters)]
+    mycol3 = mydb3[str(gfilters)]
+    mycol4 = mydb4[str(gfilters)]
     
     query = mycol.find( {"text":name})
     # query = mycol.find( { "$text": {"$search": name}})
@@ -59,6 +71,8 @@ async def find_gfilter(gfilters, name):
 async def get_gfilters(gfilters):
     mycol = mydb[str(gfilters)]
     mycol2 = mydb2[str(gfilters)]
+    mycol3 = mydb3[str(gfilters)]
+    mycol4 = mydb4[str(gfilters)]
 
     texts = []
     query = mycol.find()
@@ -81,6 +95,8 @@ async def get_gfilters(gfilters):
 async def delete_gfilter(message, text, gfilters):
     mycol = mydb[str(gfilters)]
     mycol2 = mydb2[str(gfilters)]
+    mycol3 = mydb3[str(gfilters)]
+    mycol4 = mydb4[str(gfilters)]
     
     myquery = {'text':text }
     query = mycol.count_documents(myquery)
@@ -121,19 +137,28 @@ async def del_allg(message, gfilters):
 async def count_gfilters(gfilters):
     mycol = mydb[str(gfilters)]
     mycol2 = mydb2[str(gfilters)]
+    mycol3 = mydb3[str(gfilters)]
+    mycol4 = mydb4[str(gfilters)]
+    
 
-    count = ((mycol.count())+(mycol2.count()))
+    count = ((mycol.count())+(mycol2.count())+(mycol3.count())+(mycol4.count()))
     return False if count == 0 else count
 
 async def gfilter_stats():
     collections = mydb.list_collection_names()
     collections2 = mydb2.list_collection_names()
+    collections3 = mydb3.list_collection_names()
+    collections4 = mydb4.list_collection_names()
 
     if "CONNECTION" in collections:
         collections.remove("CONNECTION")
     elif "CONNECTION" in collections2:
         collections2.remove("CONNECTION")
-
+    elif "CONNECTION" in collections3:
+        collections3.remove("CONNECTION")
+    elif "CONNECTION" in collections4:
+        collections4.remove("CONNECTION")
+        
     totalcount = 0
     for collection in collections:
         mycol = mydb[collection]
@@ -145,6 +170,16 @@ async def gfilter_stats():
         count2 = mycol2.count()
         totalcount += count2
 
-    totalcollections = len(collections)+len(collections2)
+    for collection in collections3:
+        mycol3 = mydb3[collection]
+        count3 = mycol3.count()
+        totalcount += count3
+
+    for collection in collections4:
+        mycol4 = mydb4[collection]
+        count4 = mycol4.count()
+        totalcount += count4
+
+    totalcollections = len(collections)+len(collections2)+len(collections3)+len(collections4)
 
     return totalcollections, totalcount
