@@ -53,7 +53,7 @@ THIRDDB_URI = environ.get('THIRDDB_URI', "")
 SECONDDB_URI = environ.get('SECONDDB_URI', "")
 DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "autofilter")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegram_files')
+COLLECTION_NAME = environ.get('COLLECTION_NAME', 'files_link')
 
 
 # Others
