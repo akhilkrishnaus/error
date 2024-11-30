@@ -173,6 +173,8 @@ async def del_all(message, group_id, title):
     try:
         mycol.drop()
         mycol2.drop()
+        mycol3.drop()
+        mycol4.drop()
         await message.edit_text(f"All filters from {title} has been removed")
     except:
         await message.edit_text("Couldn't remove all filters from group!")
@@ -182,19 +184,27 @@ async def del_all(message, group_id, title):
 async def count_filters(group_id):
     mycol = mydb[str(group_id)]
     mycol2 = mydb2[str(group_id)]
+    mycol3 = mydb3[str(group_id)]
+    mycol4 = mydb4[str(group_id)]
 
-    count = (mycol.count())+(mycol2.count())
+    count = (mycol.count())+(mycol2.count())+(mycol3.count())+(mycol4.count())
     return False if count == 0 else count
 
 
 async def filter_stats():
     collections = mydb.list_collection_names()
     collections2 = mydb2.list_collection_names()
+    collections3 = mydb3.list_collection_names()
+    collections4 = mydb4.list_collection_names()
 
     if "CONNECTION" in collections:
         collections.remove("CONNECTION")
     elif "CONNECTION" in collections2:
         collections2.remove("CONNECTION")
+    elif "CONNECTION" in collections2:
+        collections3.remove("CONNECTION")
+    elif "CONNECTION" in collections2:
+        collections4.remove("CONNECTION")
 
     totalcount = 0
     for collection in collections:
@@ -207,6 +217,18 @@ async def filter_stats():
         count2 = mycol2.count()
         totalcount += count2
 
-    totalcollections = len(collections)+len(collections2)
+    for collection in collections3:
+        mycol3 = mydb3[collection]
+        count3 = mycol3.count()
+        totalcount += count3
+
+    for collection in collections4:
+        mycol4 = mydb4[collection]
+        count4 = mycol4.count()
+        totalcount += count4
+        
+        
+
+    totalcollections = len(collections)+len(collections2)+len(collections3)+len(collections4)
 
     return totalcollections, totalcount
