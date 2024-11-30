@@ -256,14 +256,16 @@ class Database:
         chat = await self.grp.find_one({'id':int(id)})
         if chat:
             return chat.get('settings', default)
-        elif chat == await self.grp3.find_one({'id':int(id)})
-             if chat:
-                 return chat.get('settings', default)
-        elif chat == await self.grp4.find_one({'id':int(id)})
-             if chat:
-                 return chat.get('settings', default)
+            
+        chat = await self.grp3.find_one({'id':int(id)})
+        if chat:
+            return chat.get('settings', default)
+        
+        chat = await self.grp4.find_one({'id':int(id)})
+        if chat:
+            return chat.get('settings', default)
         else:
-            chat == await self.grp2.find_one({'id':int(id)})
+            chat = await self.grp2.find_one({'id':int(id)})
             if chat:
                 return chat.get('settings', default)
         return default
