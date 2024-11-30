@@ -1140,11 +1140,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
         used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
         free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format(total, users, chats, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), filesp3, round(used_dbSize3, 2), round(free_dbSize3, 2), totalsec4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
+            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(filesp3)+int(totalsec4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), filesp3, round(used_dbSize3, 2), round(free_dbSize3, 2), totalsec4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
-        )
-            
+        )   
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
