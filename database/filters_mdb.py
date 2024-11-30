@@ -135,14 +135,14 @@ async def delete_filter(message, text, group_id):
             quote=True,
             parse_mode=enums.ParseMode.MARKDOWN
         )
-    elif if query3 == 1:
+    elif query3 == 1:
             mycol3.delete_one(myquery)
             await message.reply_text(
                 f"'`{text}`'  deleted. I'll not respond to that filter anymore.",
                 quote=True,
                 parse_mode=enums.ParseMode.MARKDOWN
             )
-    elif if query4 == 1:
+    elif query4 == 1:
             mycol4.delete_one(myquery)
             await message.reply_text(
                 f"'`{text}`'  deleted. I'll not respond to that filter anymore.",
