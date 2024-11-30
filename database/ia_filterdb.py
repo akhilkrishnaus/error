@@ -115,7 +115,7 @@ async def choose_mediaDB():
         logger.error("Invalid database URI specified in tempDict['indexDB']")
 
 
-async def save_file_in_database(media):
+async def save_file(media):
     global saveMedia
     file_id, file_ref = unpack_new_file_id(media.file_id)
     file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
