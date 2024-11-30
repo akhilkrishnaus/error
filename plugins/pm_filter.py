@@ -1073,13 +1073,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         #1 db
-        totalp = await Media.count_documents()
+        tot1 = await Media.count_documents()
         #secondary db
-        totalsec = await Media2.count_documents()
+        tot2 = await Media2.count_documents()
         #third db
-        file3 = await Media3.count_documents()
+        tot3 = await Media3.count_documents()
         #fourth db
-        total4 = await Media4.count_documents()
+        tot4 = await Media4.count_documents()
+        total = tot1 + tot2 + tot3 + tot4 
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
@@ -1100,7 +1101,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
         free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(file3)+int(total4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), file3, round(used_dbSize3, 2), round(free_dbSize3, 2), total4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
+            text=script.STATUS_TXT.format(total, users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), file3, round(used_dbSize3, 2), round(free_dbSize3, 2), total4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
