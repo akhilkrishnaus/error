@@ -1,6 +1,6 @@
 import pymongo
 from sample_info import tempDict
-from info import DATABASE_URI, DATABASE_NAME, SECONDDB_URI
+from info import DATABASE_URI, DATABASE_NAME, SECONDDB_URI, THIRDDB_URI, FORTHDB_URI
 
 import logging
 logger = logging.getLogger(__name__)
@@ -13,6 +13,14 @@ mycol = mydb['CONNECTION']
 myclient2 = pymongo.MongoClient(SECONDDB_URI)
 mydb2 = myclient2[DATABASE_NAME]
 mycol2 = mydb2['CONNECTION']
+
+myclient3 = pymongo.MongoClient(THIRDDB_URI)
+mydb3 = myclient3[DATABASE_NAME]
+mycol3 = mydb3['CONNECTION']  
+
+myclient4 = pymongo.MongoClient(FORTHDB_URI)
+mydb4 = myclient4[DATABASE_NAME]
+mycol4 = mydb4['CONNECTION']
 
 async def add_connection(group_id, user_id):
     query = mycol.find_one(
