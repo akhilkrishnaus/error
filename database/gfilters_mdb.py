@@ -1,5 +1,5 @@
 import pymongo
-from info import DATABASE_URI, DATABASE_NAME, SECONDDB_URI
+from info import DATABASE_URI, DATABASE_NAME, SECONDDB_URI, THIRDDB_URI, FORTHDB_URI
 from pyrogram import enums
 from sample_info import tempDict
 import logging
