@@ -127,7 +127,7 @@ class Database:
         return user.get('ban_status', default)
 
     async def get_all_users(self):
-        users_list = (await (self.col.find({})).to_list(length=None))+(await (self.col2.find({})).to_list(length=None))
+        users_list = (await (self.col.find({})).to_list(length=None))+(await (self.col2.find({})).to_list(length=None))+(await (self.col3.find({})).to_list(length=None))+(await (self.col4.find({})).to_list(length=None))
         return users_list
     
 
@@ -135,6 +135,10 @@ class Database:
         user = await self.col.find_one({'id': int(user_id)})
         if user:
             await self.col.delete_many({'id': int(user_id)})
+        elif user:
+            await self.col3.delete_many({'id': int(user_id)})
+        elif user:
+            await self.col4.delete_many({'id': int(user_id)})
         else:
             await self.col2.delete_many({'id': int(user_id)})
 
@@ -148,6 +152,14 @@ class Database:
         chats = self.grp2.find({'chat_status.is_disabled': True})
         b_chats += [chat['id'] async for chat in chats]
         b_users += [user['id'] async for user in users]
+        users = self.col3.find({'ban_status.is_banned': True})
+        chats = self.grp3.find({'chat_status.is_disabled': True})
+        b_chats += [chat['id'] async for chat in chats]
+        b_users += [user['id'] async for user in users]
+        users = self.col4.find({'ban_status.is_banned': True})
+        chats = self.grp4.find({'chat_status.is_disabled': True})
+        b_chats += [chat['id'] async for chat in chats]
+        b_users += [user['id'] async for user in users]
         return b_users, b_chats
     
 
@@ -157,6 +169,10 @@ class Database:
         print(f"tempDict: {tempDict['indexDB']}\n\nDATABASE_URI: {DATABASE_URI}")
         if tempDict['indexDB'] == DATABASE_URI:
             await self.grp.insert_one(chat)
+        elif tempDict['indexDB'] == THIRDDB_URI:
+            await self.grp3.insert_one(chat)
+        elif tempDict['indexDB'] == FORTHDB_URI:
+            await self.grp4.insert_one(chat)
         else:
             await self.grp2.insert_one(chat)
     
@@ -165,6 +181,11 @@ class Database:
         chat = await self.grp.find_one({'id':int(id)})
         if not chat:
             chat = await self.grp2.find_one({'id':int(id)})
+        elif not chat:
+            chat = await self.grp3.find_one({'id':int(id)})
+        elif not chat:
+            chat = await self.grp4.find_one({'id':int(id)})
+        else:
         return False if not chat else chat.get('chat_status')
     
 
@@ -176,6 +197,10 @@ class Database:
         chat = await self.grp.find_one({'id':int(id)})
         if chat:
             await self.grp.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
+        elif chat:
+            await self.grp3.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
+        elif chat:
+            await self.grp4.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
         else:
             await self.grp2.update_one({'id': int(id)}, {'$set': {'chat_status': chat_status}})
         
@@ -183,6 +208,10 @@ class Database:
         chat = await self.grp.find_one({'id':int(id)})
         if chat:
             await self.grp.update_one({'id': int(id)}, {'$set': {'settings': settings}})
+        elif chat:
+            await self.grp3.update_one({'id': int(id)}, {'$set': {'settings': settings}})
+        elif chat:
+            await self.grp4.update_one({'id': int(id)}, {'$set': {'settings': settings}})
         else:
             await self.grp2.update_one({'id': int(id)}, {'$set': {'settings': settings}})
         
@@ -206,6 +235,12 @@ class Database:
         chat = await self.grp.find_one({'id':int(id)})
         if chat:
             return chat.get('settings', default)
+        elif chat = await self.grp3.find_one({'id':int(id)})
+             if chat:
+                 return chat.get('settings', default)
+        elif chat = await self.grp4.find_one({'id':int(id)})
+             if chat:
+                 return chat.get('settings', default)
         else:
             chat = await self.grp2.find_one({'id':int(id)})
             if chat:
@@ -221,16 +256,20 @@ class Database:
         chat = await self.grp.find_one({'id':int(chat)})
         if chat:
             await self.grp.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
+        elif chat:
+            await self.grp3.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
+        elif chat:
+            await self.grp4.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
         else:
             await self.grp2.update_one({'id': int(chat)}, {'$set': {'chat_status': chat_status}})
     
 
     async def total_chat_count(self):
-        count = (await self.grp.count_documents({}))+(await self.grp2.count_documents({}))
+        count = (await self.grp.count_documents({}))+(await self.grp2.count_documents({}))+(await self.grp3.count_documents({}))+(await self.grp4.count_documents({}))
         return count
     
 
     async def get_all_chats(self):
-        return ((await (self.grp.find({})).to_list(length=None))+(await (self.grp2.find({})).to_list(length=None)))
+        return ((await (self.grp.find({})).to_list(length=None))+(await (self.grp2.find({})).to_list(length=None)))+((await (self.grp3.find({})).to_list(length=None))+((await (self.grp4.find({})).to_list(length=None))
 
 db = Database(DATABASE_NAME)
