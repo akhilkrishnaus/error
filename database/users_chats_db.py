@@ -79,6 +79,10 @@ class Database:
         user = self.new_user(id, name)
         if tempDict['indexDB'] == DATABASE_URI:
             await self.col.insert_one(user)
+        elif tempDict['indexDB'] == THIRDDB_URI:
+            await self.col3.insert_one(user)
+        elif tempDict['indexDB'] == FORTHDB_URI:
+            await self.col4.insert_one(user)
         else:
             await self.col2.insert_one(user)
     
@@ -86,10 +90,15 @@ class Database:
         user = await self.col.find_one({'id':int(id)})
         if not user:
             user = await self.col2.find_one({'id':int(id)})
+        elif not user:
+            user = await self.col3.find_one({'id':int(id)})
+        elif not user:
+            user = await self.col4.find_one({'id':int(id)})
+        else:
         return bool(user)
     
     async def total_users_count(self):
-        count = ((await self.col.count_documents({}))+(await self.col2.count_documents({})))
+        count = ((await self.col.count_documents({}))+(await self.col2.count_documents({}))+(await self.col3.count_documents({}))+(await self.col4.count_documents({})))
         return count
     
     async def remove_ban(self, id):
@@ -100,6 +109,10 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         if not user:
             await self.col2.update_one({'id': id}, {'$set': {'ban_status': ban_status}})
+        elif not user:
+            await self.col3.update_one({'id': id}, {'$set': {'ban_status': ban_status}})
+        elif not user:
+            await self.col4.update_one({'id': id}, {'$set': {'ban_status': ban_status}})
         else:
             await self.col.update_one({'id': id}, {'$set': {'ban_status': ban_status}})
     
@@ -111,6 +124,10 @@ class Database:
         user = await self.col.find_one({'id': int(user_id)})
         if not user:
             await self.col2.update_one({'id': user_id}, {'$set': {'ban_status': ban_status}})
+        elif not user:
+            await self.col3.update_one({'id': user_id}, {'$set': {'ban_status': ban_status}})
+        elif not user:
+            await self.col4.update_one({'id': user_id}, {'$set': {'ban_status': ban_status}})
         else:
             await self.col.update_one({'id': user_id}, {'$set': {'ban_status': ban_status}})
 
@@ -122,6 +139,10 @@ class Database:
         user = await self.col.find_one({'id':int(id)})
         if not user:
             user = await self.col2.find_one({'id':int(id)})
+        elif not user:
+            user = await self.col3.find_one({'id':int(id)})
+        elif not user:
+            user = await self.col4.find_one({'id':int(id)})
             if not user:
                 return default
         return user.get('ban_status', default)
