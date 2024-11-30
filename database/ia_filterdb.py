@@ -8,7 +8,7 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER, MAX_B_TN, SECONDDB_URI
+from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER, MAX_B_TN, SECONDDB_URI, THIRDDB_URI, FORTHDB_URI
 from utils import get_settings, save_group_settings
 from sample_info import tempDict 
 
@@ -58,7 +58,7 @@ class Media2(Document):
 
 #3rd
 
-client3 = AsyncIOMotorClient(DATABASE_URI3)
+client3 = AsyncIOMotorClient(THIRDDB_URI)
 db3 = client[DATABASE_NAME]
 instance3 = Instance.from_db(db3)
 
@@ -77,7 +77,7 @@ class Media3(Document):
         collection_name = COLLECTION_NAME
 
 #4th
-client4 = AsyncIOMotorClient(DATABASE_URI4)
+client4 = AsyncIOMotorClient(FORTHDB_URI)
 db4 = client[DATABASE_NAME]
 instance4 = Instance.from_db(db4)
 
@@ -95,43 +95,6 @@ class Media4(Document):
         indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
 
-#5th
-client5 = AsyncIOMotorClient(DATABASE_URI5)
-db5 = client[DATABASE_NAME]
-instance5 = Instance.from_db(db5)
-
-@instance5.register
-class Media5(Document):
-    file_id = fields.StrField(attribute='_id')
-    file_ref = fields.StrField(allow_none=True)
-    file_name = fields.StrField(required=True)
-    file_size = fields.IntField(required=True)
-    file_type = fields.StrField(allow_none=True)
-    mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
-    class Meta:
-        indexes = ('$file_name', )
-        collection_name = COLLECTION_NAME
-
-#6th
-client6 = AsyncIOMotorClient(DATABASE_URI6)
-db6 = client[DATABASE_NAME]
-instance6 = Instance.from_db(db6)
-
-@instance6.register
-class Media6(Document):
-    file_id = fields.StrField(attribute='_id')
-    file_ref = fields.StrField(allow_none=True)
-    file_name = fields.StrField(required=True)
-    file_size = fields.IntField(required=True)
-    file_type = fields.StrField(allow_none=True)
-    mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
-    class Meta:
-        indexes = ('$file_name', )
-        collection_name = COLLECTION_NAME
 
 async def choose_mediaDB():
     """This Function chooses which database to use based on the value of indexDB key in the dict tempDict."""
@@ -139,21 +102,15 @@ async def choose_mediaDB():
     if tempDict['indexDB'] == DATABASE_URI:
         logger.info("Using first db (Media)")
         saveMedia = Media
-    elif tempDict['indexDB'] == DATABASE_URI2:
+    elif tempDict['indexDB'] == SECONDDB_URI:
         logger.info("Using second db (Media2)")
         saveMedia = Media2
-    elif tempDict['indexDB'] == DATABASE_URI3:
+    elif tempDict['indexDB'] == THIRDDB_URI:
         logger.info("Using third db (Media3)")
         saveMedia = Media3
-    elif tempDict['indexDB'] == DATABASE_URI4:
+    elif tempDict['indexDB'] == FORTHDB_URI:
         logger.info("Using fourth db (Media4)")
         saveMedia = Media4
-    elif tempDict['indexDB'] == DATABASE_URI5:
-        logger.info("Using fifth db (Media5)")
-        saveMedia = Media5
-    elif tempDict['indexDB'] == DATABASE_URI6:
-        logger.info("Using sixth db (Media6)")
-        saveMedia = Media6
     else:
         logger.error("Invalid database URI specified in tempDict['indexDB']")
 
@@ -162,7 +119,7 @@ async def save_file_in_database(media):
     global saveMedia
     file_id, file_ref = unpack_new_file_id(media.file_id)
     file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
-    DATABASES = [Media, Media2, Media3, Media4, Media5, Media6]
+    DATABASES = [Media, Media2, Media3, Media4]
     try:
         for db in DATABASES:
             if await db.count_documents({'file_id': file_id}, limit=1):
@@ -221,8 +178,6 @@ async def get_search_results(query, file_type=None, max_results=8, offset=0, fil
     cursor_media2 = Media2.find(filter).sort('$natural', -1)
     cursor_media3 = Media3.find(filter).sort('$natural', -1)
     cursor_media4 = Media4.find(filter).sort('$natural', -1)
-    cursor_media5 = Media5.find(filter).sort('$natural', -1)
-    cursor_media6 = Media6.find(filter).sort('$natural', -1)
     
     # Ensure offset is non-negative
     if offset < 0:
@@ -233,14 +188,12 @@ async def get_search_results(query, file_type=None, max_results=8, offset=0, fil
     files_media2 = await cursor_media2.to_list(length=35)
     files_media3 = await cursor_media3.to_list(length=35)
     files_media4 = await cursor_media4.to_list(length=35)
-    files_media5 = await cursor_media5.to_list(length=35)
-    files_media6 = await cursor_media6.to_list(length=35)
-
-    total_results = len(files_media1) + len(files_media2) + len(files_media3) + len(files_media4) + len(files_media5) + len(files_media6)
+    
+    total_results = len(files_media1) + len(files_media2) + len(files_media3) + len(files_media4)
     # Interleave files from both collections based on the offset
     interleaved_files = []
     index_media1 = index_media2 = index_media3 = index_media4 = index_media5 = index_media6 = 0
-    while index_media1 < len(files_media1) or index_media2 < len(files_media2) or index_media3 < len(files_media3) or index_media4 < len(files_media4) or index_media5 < len(files_media5) or index_media6 < len(files_media6):
+    while index_media1 < len(files_media1) or index_media2 < len(files_media2) or index_media3 < len(files_media3) or index_media4 < len(files_media4):
         if index_media1 < len(files_media1):
             interleaved_files.append(files_media1[index_media1])
             index_media1 += 1
@@ -253,12 +206,7 @@ async def get_search_results(query, file_type=None, max_results=8, offset=0, fil
         if index_media4 < len(files_media4):
             interleaved_files.append(files_media4[index_media4])
             index_media4 += 1
-        if index_media5 < len(files_media5):
-            interleaved_files.append(files_media5[index_media5])
-            index_media5 += 1
-        if index_media6 < len(files_media6):
-            interleaved_files.append(files_media6[index_media6])
-            index_media6 += 1
+        
     # Slice the interleaved files based on the offset and max_results
     files = interleaved_files[offset:offset + max_results]
 
@@ -300,11 +248,15 @@ async def get_bad_files(query, file_type=None, filter=False):
 
     cursor = Media.find(filter)
     cursor2 = Media2.find(filter)
+    cursor3 = Media3.find(filter)
+    cursor4 = Media4.find(filter)
     # Sort by recent
     cursor.sort('$natural', -1)
     cursor2.sort('$natural', -1)
+    cursor3.sort('$natural', -1)
+    cursor4.sort('$natural', -1)
     # Get list of files
-    files = ((await cursor2.to_list(length=(await Media2.count_documents(filter))))+(await cursor.to_list(length=(await Media.count_documents(filter)))))
+    files = ((await cursor2.to_list(length=(await Media2.count_documents(filter))))+(await cursor.to_list(length=(await Media.count_documents(filter))))+(await cursor.to_list(length=(await Media3.count_documents(filter))))+(await cursor.to_list(length=(await Media4.count_documents(filter)))))
 
     #calculate total results
     total_results = len(files)
@@ -329,14 +281,7 @@ async def get_file_details(query):
     filedetails_media4 = await cursor_media4.to_list(length=1)
     if filedetails_media4:
         return filedetails_media4
-    cursor_media5 = Media5.find(filter)
-    filedetails_media5 = await cursor_media5.to_list(length=1)
-    if filedetails_media5:
-        return filedetails_media5
-    cursor_media6 = Media6.find(filter)
-    filedetails_media6 = await cursor_media6.to_list(length=1)
-    if filedetails_media6:
-        return filedetails_media6
+    
 
 
 def encode_file_id(s: bytes) -> str:
