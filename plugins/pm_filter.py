@@ -1077,9 +1077,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
         #secondary db
         totalsec = await Media2.count_documents()
         #third db
-        filesp3 = await Media3.count_documents()
+        file3 = await Media3.count_documents()
         #fourth db
-        totalsec4 = await Media4.count_documents()
+        total4 = await Media4.count_documents()
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
@@ -1116,9 +1116,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
         #secondary db
         totalsec = await Media2.count_documents()
         #third db
-        filesp3 = await Media3.count_documents()
+        file3 = await Media3.count_documents()
         #fourth db
-        totalsec4 = await Media4.count_documents()
+        total4 = await Media4.count_documents()
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
