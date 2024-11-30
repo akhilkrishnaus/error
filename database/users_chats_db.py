@@ -94,7 +94,8 @@ class Database:
             user = await self.col3.find_one({'id':int(id)})
         elif not user:
             user = await self.col4.find_one({'id':int(id)})
-        return bool(user)
+        else:
+            return bool(user)
     
     async def total_users_count(self):
         count = ((await self.col.count_documents({}))+(await self.col2.count_documents({}))+(await self.col3.count_documents({}))+(await self.col4.count_documents({})))
@@ -206,7 +207,7 @@ class Database:
         elif not chat:
             chat = await self.grp4.find_one({'id':int(id)})
         else:
-        return False if not chat else chat.get('chat_status')
+            return False if not chat else chat.get('chat_status')
     
 
     async def re_enable_chat(self, id):
