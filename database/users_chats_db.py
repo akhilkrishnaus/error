@@ -293,6 +293,6 @@ class Database:
     
 
     async def get_all_chats(self):
-        return ((await (self.grp.find({})).to_list(length=None))+(await (self.grp2.find({})).to_list(length=None)))+((await (self.grp3.find({})).to_list(length=None))+((await (self.grp4.find({})).to_list(length=None)))
+        return ((await (self.grp.find({})).to_list(length=None)))+(((await (self.grp2.find({})).to_list(length=None))))+(((await (self.grp3.find({})).to_list(length=None))))+(((await (self.grp4.find({})).to_list(length=None))))
 
 db = Database(DATABASE_NAME)
