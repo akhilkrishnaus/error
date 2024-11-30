@@ -1,8 +1,6 @@
-# https://github.com/odysseusmax/animated-lamp/blob/master/bot/database/database.py
 import motor.motor_asyncio
 from sample_info import tempDict
-from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, AUTO_DELETE, MAX_BTN, AUTO_FFILTER, SHORTLINK_API, SHORTLINK_URL, IS_SHORTLINK, SECONDDB_URI
-
+from info import DATABASE_NAME, DATABASE_URI, IMDB, IMDB_TEMPLATE, MELCOW_NEW_USERS, P_TTI_SHOW_OFF, SINGLE_BUTTON, SPELL_CHECK_REPLY, PROTECT_CONTENT, AUTO_DELETE, MAX_BTN, AUTO_FFILTER, SHORTLINK_API, SHORTLINK_URL, IS_SHORTLINK, SECONDDB_URI, THIRDDB_URI, FORTHDB_URI
 class Database:
     
     def __init__(self, database_name):
@@ -16,6 +14,16 @@ class Database:
         self.db2 = self._client2[database_name]
         self.col2 = self.db2.users
         self.grp2 = self.db2.groups
+        #3 db
+        self._client3 = motor.motor_asyncio.AsyncIOMotorClient(THIRDDB_URI)
+        self.db3 = self._client3[database_name]
+        self.col3 = self.db3.users
+        self.grp3 = self.db3.groups
+        #4 db
+        self._client4 = motor.motor_asyncio.AsyncIOMotorClient(FORTHDB_URI)
+        self.db4 = self._client4[database_name]
+        self.col4 = self.db4.users
+        self.grp4 = self.db4.groups
 
 
     def new_user(self, id, name):
