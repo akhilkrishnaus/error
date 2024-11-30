@@ -1069,7 +1069,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "stats":
         buttons = [[
             InlineKeyboardButton('⇌ Bᴀᴄᴋ ⇌', callback_data='about'),
-            InlineKeyboardButton('Rᴇғʀᴇsʜ ', callback_data='rfrsh')
+            InlineKeyboardButton('♻️Rᴇғʀᴇsʜ♻️ ', callback_data='rfrsh')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         #1 db
@@ -1100,7 +1100,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
         free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(filesp3)+int(totalsec4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), filesp3, round(used_dbSize3, 2), round(free_dbSize3, 2), totalsec4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
+            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(file3)+int(total4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), file3, round(used_dbSize3, 2), round(free_dbSize3, 2), total4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
@@ -1108,7 +1108,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer("ғᴇᴛᴄʜɪɴɢ ᴍᴏɴɢᴏᴅʙ ᴅᴀᴛᴀʙᴀsᴇ")
         buttons = [[
             InlineKeyboardButton('⇌ Bᴀᴄᴋ ⇌', callback_data='about'),
-            InlineKeyboardButton('Rᴇғʀᴇsʜ ', callback_data='rfrsh')
+            InlineKeyboardButton('♻️Rᴇғʀᴇsʜ♻️ ', callback_data='rfrsh')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         #1 db
@@ -1119,7 +1119,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         filesp3 = await Media3.count_documents()
         #fourth db
         totalsec4 = await Media4.count_documents()
-        total = totalp + totalsec + filesp3 + totalsec4
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
@@ -1140,7 +1139,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
         free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(filesp3)+int(totalsec4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), filesp3, round(used_dbSize3, 2), round(free_dbSize3, 2), totalsec4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
+            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(file3)+int(total4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), file3, round(used_dbSize3, 2), round(free_dbSize3, 2), total4, round(used_dbSize4, 2), round(free_dbSize4, 2)),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )   
