@@ -181,7 +181,7 @@ async def if_active(user_id, group_id):
             { "_id": 0, "group_details": 0 }
         )
     else:
-    return query is not None and query['active_group'] == group_id
+        return query is not None and query['active_group'] == group_id
 
 
 async def make_active(user_id, group_id):
@@ -205,7 +205,7 @@ async def make_active(user_id, group_id):
             {"$set": {"active_group" : group_id}}
         )
     else:
-    return update.modified_count != 0
+        return update.modified_count != 0
 
 
 async def make_inactive(user_id):
@@ -229,7 +229,7 @@ async def make_inactive(user_id):
             {"$set": {"active_group" : None}}
         )
     else:
-    return update.modified_count != 0
+         return update.modified_count != 0
 
 
 async def delete_connection(user_id, group_id):
