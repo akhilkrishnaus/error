@@ -94,7 +94,6 @@ class Database:
             user = await self.col3.find_one({'id':int(id)})
         elif not user:
             user = await self.col4.find_one({'id':int(id)})
-        else:
         return bool(user)
     
     async def total_users_count(self):
