@@ -1091,8 +1091,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
         stats2 = await clientDB2.command('dbStats')
         used_dbSize2 = (stats2['dataSize']/(1024*1024))+(stats2['indexSize']/(1024*1024))
         free_dbSize2 = 512-used_dbSize2
+        #third
+        stats3 = await clientDB3.command('dbStats')
+        used_dbSize3 = (stats3['dataSize']/(1024*1024))+(stats3['indexSize']/(1024*1024))
+        free_dbSize3 = 512-used_dbSize3
+        #forth
+        stats4 = await clientDB4.command('dbStats')
+        used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
+        free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2)),
+            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)+int(filesp3)+int(totalsec4)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), ),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
