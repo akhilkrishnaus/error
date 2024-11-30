@@ -69,7 +69,6 @@ async def add_connection(group_id, user_id):
                         "$set": {"active_group" : group_id}
                     }
                 )
-                return True
             elif mycol.count_documents( {"_id": user_id} ) == 0:
                   mycol3.update_one(
                     {'_id': user_id},
@@ -78,7 +77,6 @@ async def add_connection(group_id, user_id):
                         "$set": {"active_group" : group_id}
                     }
                 )
-                return True
             elif mycol.count_documents( {"_id": user_id} ) == 0:
                   mycol4.update_one(
                     {'_id': user_id},
@@ -87,7 +85,6 @@ async def add_connection(group_id, user_id):
                         "$set": {"active_group" : group_id}
                     }
                 )
-                return True
             else:
                 mycol.update_one(
                     {'_id': user_id},
