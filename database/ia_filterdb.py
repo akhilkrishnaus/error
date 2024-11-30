@@ -148,22 +148,38 @@ async def save_file(media):
             return True, 1
 
 
-async def get_search_results(query, file_type=None, max_results=8, offset=0, filter=False):
+async def get_search_results(chat_id, query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset)"""
-
+    if chat_id is not None:
+        settings = await get_settings(int(chat_id))
+        try:
+            if settings['max_btn']:
+                max_results = 10
+            else:
+                max_results = int(MAX_B_TN)
+        except KeyError:
+            await save_group_settings(int(chat_id), 'max_btn', False)
+            settings = await get_settings(int(chat_id))
+            if settings['max_btn']:
+                max_results = 10
+            else:
+                max_results = int(MAX_B_TN)
     query = query.strip()
-
+    #if filter:
+        #better ?
+        #query = query.replace(' ', r'(\s|\.|\+|\-|_)')
+        #raw_pattern = r'(\s|_|\-|\.|\+)' + query + r'(\s|_|\-|\.|\+)'
     if not query:
         raw_pattern = '.'
     elif ' ' not in query:
-        raw_pattern = r'(\b|[\.\+\-_]|\s|&)' + query + r'(\b|[\.\+\-_]|\s|&)'
+        raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
     else:
-        raw_pattern = query.replace(' ', r'.*[&\s\.\+\-_()\[\]]')
-
+        raw_pattern = query.replace(' ', r'.*[\s\.\+\-_()]')
+    
     try:
         regex = re.compile(raw_pattern, flags=re.IGNORECASE)
     except:
-        return [], '', 0
+        return []
 
     if USE_CAPTION_FILTER:
         filter = {'$or': [{'file_name': regex}, {'caption': regex}]}
@@ -172,52 +188,40 @@ async def get_search_results(query, file_type=None, max_results=8, offset=0, fil
 
     if file_type:
         filter['file_type'] = file_type
-    
-    # Query both collections
-    cursor_media1 = Media.find(filter).sort('$natural', -1)
-    cursor_media2 = Media2.find(filter).sort('$natural', -1)
-    cursor_media3 = Media3.find(filter).sort('$natural', -1)
-    cursor_media4 = Media4.find(filter).sort('$natural', -1)
-    
-    # Ensure offset is non-negative
-    if offset < 0:
-        offset = 0
 
-    # Fetch files from both collections
-    files_media1 = await cursor_media1.to_list(length=35)
-    files_media2 = await cursor_media2.to_list(length=35)
-    files_media3 = await cursor_media3.to_list(length=35)
-    files_media4 = await cursor_media4.to_list(length=35)
-    
-    total_results = len(files_media1) + len(files_media2) + len(files_media3) + len(files_media4)
-    # Interleave files from both collections based on the offset
-    interleaved_files = []
-    index_media1 = index_media2 = index_media3 = index_media4 = index_media5 = index_media6 = 0
-    while index_media1 < len(files_media1) or index_media2 < len(files_media2) or index_media3 < len(files_media3) or index_media4 < len(files_media4):
-        if index_media1 < len(files_media1):
-            interleaved_files.append(files_media1[index_media1])
-            index_media1 += 1
-        if index_media2 < len(files_media2):
-            interleaved_files.append(files_media2[index_media2])
-            index_media2 += 1
-        if index_media3 < len(files_media3):
-            interleaved_files.append(files_media3[index_media3])
-            index_media3 += 1
-        if index_media4 < len(files_media4):
-            interleaved_files.append(files_media4[index_media4])
-            index_media4 += 1
-        
-    # Slice the interleaved files based on the offset and max_results
-    files = interleaved_files[offset:offset + max_results]
+    total_results = ((await Media.count_documents(filter))+(await Media2.count_documents(filter))+(await Media3.count_documents(filter))+(await Media4.count_documents(filter)))
 
-    # Calculate next offset
-    next_offset = offset + len(files)
+    #verifies max_results is an even number or not
+    if max_results%2 != 0: #if max_results is an odd number, add 1 to make it an even number
+        logger.info(f"Since max_results is an odd number ({max_results}), bot will use {max_results+1} as max_results to make it even.")
+        max_results += 1
 
-    # If there are more results, return the next_offset; otherwise, set it to ''
-    if next_offset < total_results:
-        return files, next_offset, total_results
+    cursor = Media.find(filter)
+    cursor2 = Media2.find(filter)
+    cursor3 = Media3.find(filter)
+    cursor4 = Media4.find(filter)
+    # Sort by recent
+    cursor.sort('$natural', -1)
+    cursor2.sort('$natural', -1)
+    cursor3.sort('$natural', -1)
+    cursor4.sort('$natural', -1)
+    # Slice files according to offset and max results
+    cursor2.skip(offset).limit(max_results)
+    # Get list of files
+    fileList2 = await cursor2.to_list(length=max_results)
+    if len(fileList2)<max_results:
+        next_offset = offset+len(fileList2)
+        cursorSkipper = (next_offset-(await Media2.count_documents(filter)))
+        cursor.skip(cursorSkipper if cursorSkipper>=0 else 0).limit(max_results-len(fileList2))
+        fileList1 = await cursor.to_list(length=(max_results-len(fileList2)))
+        files = fileList2+fileList1
+        next_offset = next_offset + len(fileList1)
     else:
-        return files, '', total_results
+        files = fileList2
+        next_offset = offset + max_results
+    if next_offset >= total_results:
+        next_offset = ''
+    return files, next_offset, total_results
         
 async def get_bad_files(query, file_type=None, filter=False):
     """For given query return (results, next_offset)"""
