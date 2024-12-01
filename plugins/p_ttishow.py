@@ -158,37 +158,36 @@ async def get_ststs(bot, message):
         await reply_message.delete(600)
     else:
         rju = await message.reply('<b>𝙰𝙲𝙲𝙴𝚂𝚂𝙸𝙽𝙶 𝚂𝚃𝙰𝚃𝚄𝚂 𝙳𝙴𝚃𝙰𝙸𝙻𝚂...</b>')
-    #users and chats
-    total_users = await db.total_users_count()
-    totl_chats = await db.total_chat_count()
-    #primary db
-    filesp = await Media.count_documents()
-    #secondary db
-    totalsec = await Media2.count_documents()
-    
-    #third db
-    file3= await Media3.count_documents()
-    #fourth db
-    total4 = await Media4.count_documents()
-    
-    #primary
-    stats = await clientDB.command('dbStats')
-    used_dbSize = (stats['dataSize']/(1024*1024))+(stats['indexSize']/(1024*1024))
-    free_dbSize = 512-used_dbSize
-    #secondary
-    stats2 = await clientDB2.command('dbStats')
-    used_dbSize2 = (stats2['dataSize']/(1024*1024))+(stats2['indexSize']/(1024*1024))
-    free_dbSize2 = 512-used_dbSize2
-    
-    #third
-    stats3 = await clientDB3.command('dbStats')
-    used_dbSize3 = (stats3['dataSize']/(1024*1024))+(stats3['indexSize']/(1024*1024))
-    free_dbSize3 = 512-used_dbSize3
-    #forth
-    stats4 = await clientDB4.command('dbStats')
-    used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
-    free_dbSize4 = 512-used_dbSize4
-    await rju.edit(script.STATUS_TXT.format((int(filesp)+int(totalsec)+int(file3)+int(total4)), total_users, totl_chats, filesp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2), file3, round(used_dbSize3, 2), round(free_dbSize3, 2), total4, round(used_dbSize4, 2), round(free_dbSize4, 2)))
+        #1 db
+        tot1 = await Media.count_documents()
+        #secondary db
+        tot2 = await Media2.count_documents()
+        #third db
+        tot3 = await Media3.count_documents()
+        #fourth db
+        tot4 = await Media4.count_documents()
+        
+        total = tot1 + tot2 + tot3 + tot4 
+        #users and chats
+        users = await db.total_users_count()
+        chats = await db.total_chat_count()
+        #primary db
+        stats = await clientDB.command('dbStats')
+        used_dbSize = (stats['dataSize']/(1024*1024))+(stats['indexSize']/(1024*1024))
+        free_dbSize = 512-used_dbSize
+        #secondary db
+        stats2 = await clientDB2.command('dbStats')
+        used_dbSize2 = (stats2['dataSize']/(1024*1024))+(stats2['indexSize']/(1024*1024))
+        free_dbSize2 = 512-used_dbSize2
+        #third
+        stats3 = await clientDB3.command('dbStats')
+        used_dbSize3 = (stats3['dataSize']/(1024*1024))+(stats3['indexSize']/(1024*1024))
+        free_dbSize3 = 512-used_dbSize3
+        #forth
+        stats4 = await clientDB4.command('dbStats')
+        used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
+        free_dbSize4 = 512-used_dbSize4
+        await rju.edit(script.STATUS_TXT.format(total, users, chats, tot1, round(used_dbSize, 2), round(free_dbSize, 2), tot2, round(used_dbSize2, 2), round(free_dbSize2, 2), tot3, round(used_dbSize3, 2), round(free_dbSize3, 2), tot4, round(used_dbSize4, 2), round(free_dbSize4, 2,)),
 
 
 
