@@ -187,7 +187,7 @@ async def get_ststs(bot, message):
         stats4 = await clientDB4.command('dbStats')
         used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
         free_dbSize4 = 512-used_dbSize4
-        await rju.edit(script.STATUS_TXT.format(total, users, chats, tot1, round(used_dbSize, 2), round(free_dbSize, 2), tot2, round(used_dbSize2, 2), round(free_dbSize2, 2), tot3, round(used_dbSize3, 2), round(free_dbSize3, 2), tot4, round(used_dbSize4, 2), round(free_dbSize4, 2,)),
+        await rju.edit(script.STATUS_TXT.format(total, users, chats, tot1, round(used_dbSize, 2), round(free_dbSize, 2), tot2, round(used_dbSize2, 2), round(free_dbSize2, 2), tot3, round(used_dbSize3, 2), round(free_dbSize3, 2), tot4, round(used_dbSize4, 2), round(free_dbSize4, 2)))
 
 
 
