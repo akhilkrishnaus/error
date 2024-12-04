@@ -161,6 +161,7 @@ async def get_ststs(bot, message):
     tot3 = await Media3.count_documents()
     #fourth db
     tot4 = await Media4.count_documents()
+    
     total = tot1 + tot2 + tot3 + tot4 
     #users and chats
     users = await db.total_users_count()
