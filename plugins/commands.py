@@ -7,7 +7,7 @@ from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.ia_filterdb import Media, Media2, get_file_details, unpack_new_file_id, get_bad_files
+from database.ia_filterdb import Media, Media2, Media3, Media4, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, UPDATE_CHANNEL
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
@@ -316,6 +316,14 @@ async def delete(bot, message):
         result = await Media.collection.delete_one({
             '_id': file_id,
         })
+    elif:
+        result = await Media3.collection.delete_one({
+            '_id': file_id,
+        })
+    elif:
+        result = await Media4.collection.delete_one({
+            '_id': file_id,
+        })
     else:
         result = await Media2.collection.delete_one({
             '_id': file_id,
@@ -331,7 +339,23 @@ async def delete(bot, message):
             })
         if result.deleted_count:
             await msg.edit('Fɪʟᴇ ɪs sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ғʀᴏᴍ ᴅᴀᴛᴀʙᴀsᴇ')
-        else:
+        elif:
+            result = await Media3.collection.delete_many({
+                'file_name': file_name,
+                'file_size': media.file_size,
+                'mime_type': media.mime_type
+            })
+            if result.deleted_count:
+                await msg.edit('Fɪʟᴇ ɪs sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ғʀᴏᴍ ᴅᴀᴛᴀʙᴀsᴇ')
+         elif:
+            result = await Media4.collection.delete_many({
+                'file_name': file_name,
+                'file_size': media.file_size,
+                'mime_type': media.mime_type
+            })
+            if result.deleted_count:
+                await msg.edit('Fɪʟᴇ ɪs sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ғʀᴏᴍ ᴅᴀᴛᴀʙᴀsᴇ')
+         else:
             result = await Media2.collection.delete_many({
                 'file_name': file_name,
                 'file_size': media.file_size,
@@ -349,6 +373,26 @@ async def delete(bot, message):
                 })
                 if result.deleted_count:
                     await msg.edit('Fɪʟᴇ ɪs sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ғʀᴏᴍ ᴅᴀᴛᴀʙᴀsᴇ')
+                elif:
+                    result = await Media3.collection.delete_many({
+                        'file_name': media.file_name,
+                        'file_size': media.file_size,
+                        'mime_type': media.mime_type
+                    })
+                    if result.deleted_count:
+                        await msg.edit('Fɪʟᴇ ɪs sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ғʀᴏᴍ ᴅᴀᴛᴀʙᴀsᴇ')
+                    else:
+                        await msg.edit('Fɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ ɪɴ ᴅᴀᴛᴀʙᴀsᴇ')
+                elif:
+                    result = await Media4.collection.delete_many({
+                        'file_name': media.file_name,
+                        'file_size': media.file_size,
+                        'mime_type': media.mime_type
+                    })
+                    if result.deleted_count:
+                        await msg.edit('Fɪʟᴇ ɪs sᴜᴄᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ ғʀᴏᴍ ᴅᴀᴛᴀʙᴀsᴇ')
+                    else:
+                        await msg.edit('Fɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ ɪɴ ᴅᴀᴛᴀʙᴀsᴇ')
                 else:
                     result = await Media2.collection.delete_many({
                         'file_name': media.file_name,
@@ -386,6 +430,9 @@ async def delete_all_index(bot, message):
 @Client.on_callback_query(filters.regex(r'^autofilter_delete'))
 async def delete_all_index_confirm(bot, message):
     await Media.collection.drop()
+    await Media2.collection.drop()
+    await Media3.collection.drop()
+    await Media4.collection.drop()
     await message.answer('Piracy Is Crime')
     await message.message.edit('Succesfully Deleted All The Indexed Files.')
 
