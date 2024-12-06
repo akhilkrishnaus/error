@@ -16,7 +16,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp, get_settings, save_group_settings
 from database.users_chats_db import db
-from database.ia_filterdb import Media, Media2, Media3, Media4, get_file_details, get_search_results, get_bad_files, db as clientDB, db2 as clientDB2, db3 as clientDB3, db4 as clientDB4
+from database.ia_filterdb import Media, Media2, get_file_details, get_search_results, get_bad_files, db as clientDB, db2 as clientDB2
 from database.filters_mdb import (
     del_all,
     find_filter,
@@ -1072,16 +1072,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('Rᴇғʀᴇsʜ ', callback_data='rfrsh')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        #1 db
-        tot1 = await Media.count_documents()
+        totalp = await Media.count_documents()
         #secondary db
-        tot2 = await Media2.count_documents()
-        #third db
-        tot3 = await Media3.count_documents()
-        #fourth db
-        tot4 = await Media4.count_documents()
-        
-        total = tot1 + tot2 + tot3 + tot4 
+        totalsec = await Media2.count_documents()
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
@@ -1093,16 +1086,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         stats2 = await clientDB2.command('dbStats')
         used_dbSize2 = (stats2['dataSize']/(1024*1024))+(stats2['indexSize']/(1024*1024))
         free_dbSize2 = 512-used_dbSize2
-        #third
-        stats3 = await clientDB3.command('dbStats')
-        used_dbSize3 = (stats3['dataSize']/(1024*1024))+(stats3['indexSize']/(1024*1024))
-        free_dbSize3 = 512-used_dbSize3
-        #forth
-        stats4 = await clientDB4.command('dbStats')
-        used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
-        free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format(total, users, chats, tot1, round(used_dbSize, 2), round(free_dbSize, 2), tot2, round(used_dbSize2, 2), round(free_dbSize2, 2), tot3, round(used_dbSize3, 2), round(free_dbSize3, 2), tot4, round(used_dbSize4, 2), round(free_dbSize4, 2,)),
+            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2)),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
@@ -1113,16 +1098,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('Rᴇғʀᴇsʜ ', callback_data='rfrsh')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        #1 db
-        tot1 = await Media.count_documents()
+        totalp = await Media.count_documents()
         #secondary db
-        tot2 = await Media2.count_documents()
-        #third db
-        tot3 = await Media3.count_documents()
-        #fourth db
-        tot4 = await Media4.count_documents()
-        
-        total = tot1 + tot2 + tot3 + tot4 
+        totalsec = await Media2.count_documents()
         #users and chats
         users = await db.total_users_count()
         chats = await db.total_chat_count()
@@ -1134,19 +1112,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
         stats2 = await clientDB2.command('dbStats')
         used_dbSize2 = (stats2['dataSize']/(1024*1024))+(stats2['indexSize']/(1024*1024))
         free_dbSize2 = 512-used_dbSize2
-        #third
-        stats3 = await clientDB3.command('dbStats')
-        used_dbSize3 = (stats3['dataSize']/(1024*1024))+(stats3['indexSize']/(1024*1024))
-        free_dbSize3 = 512-used_dbSize3
-        #forth
-        stats4 = await clientDB4.command('dbStats')
-        used_dbSize4 = (stats4['dataSize']/(1024*1024))+(stats4['indexSize']/(1024*1024))
-        free_dbSize4 = 512-used_dbSize4
         await query.message.edit_text(
-            text=script.STATUS_TXT.format(total, users, chats, tot1, round(used_dbSize, 2), round(free_dbSize, 2), tot2, round(used_dbSize2, 2), round(free_dbSize2, 2), tot3, round(used_dbSize3, 2), round(free_dbSize3, 2), tot4, round(used_dbSize4, 2), round(free_dbSize4, 2,)),
+            text=script.STATUS_TXT.format((int(totalp)+int(totalsec)), users, chats, totalp, round(used_dbSize, 2), round(free_dbSize, 2), totalsec, round(used_dbSize2, 2), round(free_dbSize2, 2)),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
-        )   
+        )
+            
     elif query.data.startswith("setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         grpid = await active_connection(str(query.from_user.id))
@@ -1264,7 +1235,11 @@ async def auto_filter(client, msg, spoll=False):
             
         ]
     )
-
+    
+    await msg.reply_chat_action(enums.ChatAction.TYPING)
+    px = await message.reply_text(f"𝐒𝐞𝐚𝐫𝐜𝐡𝐢𝐧𝐠 🔎🔎🔎...", quote=True)
+    await asyncio.sleep(1)
+    await px.delete()
     
    
     if offset != "":
